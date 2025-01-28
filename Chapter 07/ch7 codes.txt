@@ -1,0 +1,42 @@
+import torch 
+import torch.nn as nn 
+import torch.nn.functional as F 
+class Attention(nn.Module): 
+def __init__(self, hidden_size): 
+super(Attention, self).__init__() # Linear layer to calculate attention scores 	self.attention = nn.Linear(hidden_size, hidden_size) 
+def forward(self, encoder_outputs, hidden_state): 
+hidden_state_expanded=hidden_state.unsqueeze(1).expand_as(encoder_outputs)  	
+attention_scores = torch.tanh(self.attention(encoder_outputs)) 
+scores = torch.sum(attention_scores * hidden_state_expanded, dim=2) 
+attention_weights = F.softmax(scores, dim=1)
+context_vector = torch.bmm(attention_weights.unsqueeze(1), encoder_outputs) 
+ return context_vector, attention_weights 
+encoder_outputs = torch.rand(batch_size, seq_len, hidden_size) 
+hidden_state = torch.rand(batch_size, hidden_size)  
+attention_layer = Attention(hidden_size)  
+attention_weights = attention_layer(encoder_outputs, hidden_state) 
+print(“Context Vector:”, context_vector.shape) 
+print(“Attention Weights:”, attention_weights.shape) 
+
+---------------------------------------------------
+!pip install lime 
+import numpy as np 
+import sklearn 
+import sklearn.datasets 
+import sklearn.ensemble 
+from lime import lime_tabular 
+# Load a dataset (Breast Cancer dataset for classification) 
+data = sklearn.datasets.load_breast_cancer() 
+X = data['data'] y = data['target'] 
+# Split into train and test datasets 
+from sklearn.model_selection import train_test_split 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # Train a random forest classifier 
+rf = sklearn.ensemble.RandomForestClassifier(n_estimators=100) 
+rf.fit(X_train, y_train) # Initialize LIME explainer for tabular data 
+explainer = lime_tabular.LimeTabularExplainer(X_train, feature_names=data['feature_names'], class_names=['malignant', 'benign'], discretize_continuous=True) 
+# Select an instance to explain (for example, the first test instance)
+ i = 0 
+instance = X_test[i] # Generate explanation for the selected instance 
+exp = explainer.explain_instance(instance, rf.predict_proba, num_features=5) 
+# Print the explanation (weights of the top features) 
+exp.show_in_notebook() 

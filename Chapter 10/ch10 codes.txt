@@ -1,0 +1,107 @@
+import torch
+from transformers import XLMRobertaForSequenceClassification, XLMRobertaTokenizer
+
+# Load pre-trained model and tokenizer
+model_name = 'xlm-roberta-base'
+model = XLMRobertaForSequenceClassification.from_pretrained(model_name, num_labels=2)
+tokenizer = XLMRobertaTokenizer.from_pretrained(model_name)
+
+# Sample multilingual data
+texts = ["Hello, how are you?", "Hola, ¿cómo estás?", "Bonjour, comment ça va?"]
+labels = [0, 0, 0]  # Example labels
+
+# Tokenize and encode texts
+inputs = tokenizer(texts, padding=True, truncation=True, return_tensors='pt')
+
+# Forward pass
+outputs = model(**inputs)
+logits = outputs.logits
+
+# Loss and optimizer
+criterion = torch.nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-5)
+
+# Example training loop
+for epoch in range(3):
+    model.train()
+    optimizer.zero_grad()
+    outputs = model(**inputs)
+    loss = criterion(outputs.logits, torch.tensor(labels))
+    loss.backward()
+    optimizer.step()
+    print(f'Epoch {epoch + 1}, Loss: {loss.item()}')
+
+# Model evaluation
+model.eval()
+with torch.no_grad():
+    outputs = model(**inputs)
+    predictions = torch.argmax(outputs.logits, dim=1)
+    print(predictions)
+----------------------------------------------
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import numpy as np
+
+# Define the RNN-based language model
+class RNNLanguageModel(nn.Module):
+    def __init__(self, vocab_size, embed_size, hidden_size):
+        super(RNNLanguageModel, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, embed_size)
+        self.rnn = nn.LSTM(embed_size, hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, vocab_size)
+
+    def forward(self, x, hidden):
+        x = self.embedding(x)
+        out, hidden = self.rnn(x, hidden)
+        out = self.fc(out)
+        return out, hidden
+
+    def init_hidden(self, batch_size):
+        return (torch.zeros(1, batch_size, hidden_size),
+                torch.zeros(1, batch_size, hidden_size))
+
+# Define the reward function
+def reward_function(output, target):
+    reward = np.sum(output == target) / len(target)  # Example reward: proportion of correct predictions
+    return reward
+
+# Training parameters
+vocab_size = 5000
+embed_size = 128
+hidden_size = 256
+learning_rate = 0.01
+num_epochs = 10
+batch_size = 64
+
+# Initialize model, loss function, and optimizer
+model = RNNLanguageModel(vocab_size, embed_size, hidden_size)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+# Training loop with RL
+for epoch in range(num_epochs):
+    model.train()
+    total_loss = 0
+    total_reward = 0
+
+    for batch in data_loader:  # Assume data_loader is defined and provides batches of (input, target)
+        input, target = batch
+        hidden = model.init_hidden(batch_size)
+        optimizer.zero_grad()
+
+        output, hidden = model(input, hidden)
+        loss = criterion(output.view(-1, vocab_size), target.view(-1))
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item()
+
+        # Calculate reward
+        reward = reward_function(torch.argmax(output, dim=-1), target)
+        total_reward += reward
+
+    print(f'Epoch {epoch + 1}, Loss: {total_loss / len(data_loader)}, Reward: {total_reward / len(data_loader)}')
+
+
