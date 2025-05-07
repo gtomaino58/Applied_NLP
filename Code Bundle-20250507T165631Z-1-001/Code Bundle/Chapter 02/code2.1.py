@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
-
-
 import torch
 # Create a tensor from a list
 tensor_a = torch.tensor([1, 2, 3])
@@ -28,10 +25,3 @@ matrix_b = torch.tensor([[5, 6], [7, 8]])
 print(matrix_b)
 result = torch.matmul(matrix_a, matrix_b)
 print(result)
-
-
-# In[ ]:
-
-
-
-

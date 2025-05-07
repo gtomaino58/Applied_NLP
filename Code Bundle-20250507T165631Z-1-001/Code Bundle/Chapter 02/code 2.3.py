@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 import numpy as np
 import torch
 import torch.nn as nn
@@ -51,10 +48,3 @@ with torch.no_grad():
     y_pred = model(X)
 accuracy = (y_pred.round() == y).float().mean()
 print(f"Accuracy {accuracy}")
-
-
-# In[ ]:
-
-
-
-
