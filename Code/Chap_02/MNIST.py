@@ -174,7 +174,7 @@ print(f'Training completed in {num_epochs} epochs')
 print(f'Training time: {end_time - start_time:.2f} seconds')
 
 
-# Graficamos la pérdida y la precisión
+# Graficamos la pérdida y la precisión y las guardamos
 def plot_loss_accuracy(train_losses, test_losses, train_accuracies, test_accuracies):
     epochs = range(1, num_epochs + 1)
 
@@ -197,10 +197,12 @@ def plot_loss_accuracy(train_losses, test_losses, train_accuracies, test_accurac
     plt.ylabel('Accuracy (%)')
     plt.title('Accuracy vs Epochs')
     plt.legend()
-
     plt.show()
 
+# Graficamos la pérdida y la precisión
 plot_loss_accuracy(train_losses, test_losses, train_accuracies, test_accuracies)
+# Guardamos la gráfica
+plt.savefig('./mnist_loss_accuracy.png')
 
 # Guardamos el modelo
-torch.save(model.state_dict(), './mnist_fnn.pth')
+torch.save(model.state_dict(), './mnist_model.pth')
