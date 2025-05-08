@@ -8,7 +8,6 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
 
-import torchsummary
 import torchvision
 
 import numpy as np
@@ -31,7 +30,6 @@ print(mnist_test)
 print()
 
 print(mnist_train.data.shape)  # (60000, 28, 28)
-print()
 print(mnist_test.data.shape)  # (10000, 28, 28)
 print()
 
@@ -73,17 +71,19 @@ input_size = 28 * 28  # 784
 hidden_size1 = 128
 hidden_size2 = 64
 hidden_size3 = 32
-output_size = 10  # 0-9
+output_size = 10  # Digit [0-9]
 
 num_epochs = 10
-batch_size = 64
+batch_size = 32
 learning_rate = 0.001
 
 num_classes = 10  # 0-9
 
 # Definimos el dispositivo
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+#device = torch.device('cpu')
 print(f"Using device: {device}")
+print()
 
 # Definimos la red
 model = FNN(input_size, hidden_size1, hidden_size2, hidden_size3, output_size).to(device)
@@ -154,7 +154,9 @@ train_losses = []
 test_losses = []
 train_accuracies = []
 test_accuracies = []
+
 start_time = time.time()
+
 for epoch in range(num_epochs):
     train_loss, train_accuracy = train(model, train_loader, loss_function, optimizer, device)
     test_loss, test_accuracy = test(model, test_loader, loss_function, device)
@@ -167,6 +169,8 @@ for epoch in range(num_epochs):
     print(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}, Train Accuracy: {train_accuracy:.2f}%, Test Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.2f}%')
 
 end_time = time.time()
+print()
+print(f'Training completed in {num_epochs} epochs')
 print(f'Training time: {end_time - start_time:.2f} seconds')
 
 
@@ -198,3 +202,5 @@ def plot_loss_accuracy(train_losses, test_losses, train_accuracies, test_accurac
 
 plot_loss_accuracy(train_losses, test_losses, train_accuracies, test_accuracies)
 
+# Guardamos el modelo
+torch.save(model.state_dict(), './mnist_fnn.pth')
