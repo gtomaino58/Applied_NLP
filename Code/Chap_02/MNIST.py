@@ -80,8 +80,8 @@ learning_rate = 0.001
 num_classes = 10  # 0-9
 
 # Definimos el dispositivo
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-#device = torch.device('cpu')
+#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda')
 print(f"Using device: {device}")
 print()
 
