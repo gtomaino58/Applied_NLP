@@ -80,8 +80,8 @@ learning_rate = 0.001
 num_classes = 10  # 0-9
 
 # Definimos el dispositivo
+device = torch.device('cpu')
 #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = torch.device('cuda')
 print(f"Using device: {device}")
 print()
 
@@ -174,35 +174,30 @@ print(f'Training completed in {num_epochs} epochs')
 print(f'Training time: {end_time - start_time:.2f} seconds')
 
 
-# Graficamos la pérdida y la precisión y las guardamos
-def plot_loss_accuracy(train_losses, test_losses, train_accuracies, test_accuracies):
-    epochs = range(1, num_epochs + 1)
+# Graficamos la pérdida y la precisión y las guardamos en un archivo .png
 
-    plt.figure(figsize=(12, 5))
+plt.figure(figsize=(10, 5))
+plt.plot(train_losses, label='Train Loss')
+plt.plot(test_losses, label='Test Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.title('Loss vs Epochs')
+plt.legend()
+plt.grid()
+plt.savefig('./loss.png')
+plt.show()
 
-    # Pérdida
-    plt.subplot(1, 2, 1)
-    plt.plot(epochs, train_losses, label='Train Loss')
-    plt.plot(epochs, test_losses, label='Test Loss')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.title('Loss vs Epochs')
-    plt.legend()
 
-    # Precisión
-    plt.subplot(1, 2, 2)
-    plt.plot(epochs, train_accuracies, label='Train Accuracy')
-    plt.plot(epochs, test_accuracies, label='Test Accuracy')
-    plt.xlabel('Epochs')
-    plt.ylabel('Accuracy (%)')
-    plt.title('Accuracy vs Epochs')
-    plt.legend()
-    plt.show()
-
-# Graficamos la pérdida y la precisión
-plot_loss_accuracy(train_losses, test_losses, train_accuracies, test_accuracies)
-# Guardamos la gráfica
-plt.savefig('./mnist_loss_accuracy.png')
+plt.figure(figsize=(10, 5))
+plt.plot(train_accuracies, label='Train Accuracy')
+plt.plot(test_accuracies, label='Test Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.title('Accuracy vs Epochs')
+plt.legend()
+plt.grid()
+plt.savefig('./accuracy.png')
+plt.show()
 
 # Guardamos el modelo
 torch.save(model.state_dict(), './mnist_model.pth')
